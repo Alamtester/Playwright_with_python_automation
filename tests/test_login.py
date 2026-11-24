@@ -1,75 +1,42 @@
-from playwright.sync_api import Page, expect
+from playwright.async_api import  Page, expect
+from pages.login_page import LoginPage
 
 
-def test_login_with_valid_credential(page: Page):
+async def test_login_with_valid_credentials(page: Page):
+     login_page = LoginPage(page)
 
-    page.goto("https://opensource-demo.orangehrmlive.com/web/index.php/auth/login")
+     await login_page.navigate()
 
-    expect(page).to_have_title("OrangeHRM")
+     await  expect(page).to_have_title("OrangeHRM")
 
-    page.get_by_placeholder("username").fill("Admin")
+     await login_page.login("Admin", "admin123")
 
-    page.get_by_placeholder("Password").fill("admin123")
-
-    page.get_by_role("button" , name="Login").click()
-
-    expect(page.locator("h6")).to_have_text("Dashboard")
-
-    page.wait_for_timeout(5000)
+     await expect(page.locator(".oxd-topbar-header-breadcrumb-module")).to_have_text("Dashboard")
 
 
+async def test_login_with_invalid_username(page: Page):
+
+    login_page = LoginPage(page)  
+    await login_page.navigate()
+    await login_page.login("wrongusername","admin123")
+    await expect(login_page.error_message).to_have_text("Invalid credentials")
 
 
-def test_login_with_invalid_username(page: Page):
-
-    page.goto("https://opensource-demo.orangehrmlive.com/web/index.php/auth/login")  
-
-    page.get_by_placeholder("username").fill("wrongadmin")
-
-    page.get_by_placeholder("Password").fill("admin123")
-
-    page.get_by_role("button", name="Login").click()
-
-    expect(page.locator("p.oxd-alert-content-text")).to_have_text("Invalid credentials")
-
-    page.wait_for_timeout(5000)
+async def test_login_with_invalid_password(page: Page):
+    login_page = LoginPage(page)
+    await login_page.navigate()
+    await login_page.login("Admin","wrongpassword")
+    await expect(login_page.error_message).to_have_text("Invalid credentials")
 
 
+async def test_login_with_empty_username_password(page: Page):
+    login_page = LoginPage(page)
+    await login_page.navigate()
+
+    await login_page.login("","")
+    await expect(login_page.required_field_error_message.nth(0)).to_have_text("Required")
+    await expect(login_page.required_field_error_message.nth(1)).to_have_text("Required")
 
 
-def test_login_with_invalid_password(page: Page):
 
-    page.goto("https://opensource-demo.orangehrmlive.com/web/index.php/auth/login") 
-
-    page.get_by_placeholder("username").fill("Admin")
-
-    page.get_by_placeholder("Password").fill("wrongpassword")  
-
-    page.get_by_role("button", name="Login").click() 
-
-    expect(page.locator("p.oxd-alert-content-text")).to_have_text("Invalid credentials")
-
-    page.wait_for_timeout(5000)
-
-
-def test_login_with_blank_username_password(page: Page):
-
-    page.goto("https://opensource-demo.orangehrmlive.com/web/index.php/auth/login") 
-
-    page.get_by_placeholder("username").fill("")
-
-    page.get_by_placeholder("Password").fill("")
-
-    page.get_by_role("button",name="Login").click()
-
-##<span data-v-7b563373="" data-v-957b4417="" class="oxd-text oxd-text--span oxd-input-field-error-message oxd-input-group__message">Required</span>
-
-
-    error_messsage=page.locator("span.oxd-input-field-error-message")
-    expect(error_messsage).to_have_count(2)
-    expect(error_messsage.nth(0)).to_have_text("Required")
-    expect(error_messsage.nth(1)).to_have_text("Required")
-
-    page.wait_for_timeout(5000)
-    
 
