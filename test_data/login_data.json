@@ -1,0 +1,18 @@
+{ 
+    "valid_credentials":{
+        "username": "Admin",
+        "password": "admin123"
+    },
+    "invalid_username":{
+        "username":"invaliduser",
+        "password":"admin123"
+    },
+    "invalid_password":{
+        "username":"Admin",
+        "password":"invalidpassword"
+    },
+    "empty_credentials":{
+        "username": "",
+        "password": ""
+    }
+}

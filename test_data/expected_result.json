@@ -1,0 +1,12 @@
+{ 
+    "page_title":{
+        "login_title": "OrangeHRM"
+    },
+    "dashboard_text":{
+        "header": "Dashboard"
+    },
+    "login_errors":{
+        "invalid_credentials": "Invalid credentials",
+        "required_field": "Required"
+    }
+}
